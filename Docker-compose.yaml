@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: always
+    volumes:
+      - ./database:/var/lib/postgresql/data
+
+    ports:
+      - 5432:5432
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - fullstack-net
+  server:
+    build: ./backend
+    container_name: express-server
+    volumes:
+      - ./backend:/app
+      - node_modules:/app/node_modules
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRY: ${JWT_EXPIRY}
+      REFRESH_SECRET: ${REFRESH_SECRET}
+      REFRESH_EXPIRY: ${REFRESH_EXPIRY}
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - fullstack-net
+    restart: always
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - fullstack-net
+
+volumes:
+  node_modules:
+
+networks:
+  fullstack-net:
+    driver: bridge
