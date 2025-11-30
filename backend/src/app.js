@@ -17,7 +17,9 @@ app.use(cookieParser());
 
 // routes
 import userRouter from "./router/user.routes.js";
+import postRouter from "./router/post.routes.js";
 
 app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
 
 export { app };

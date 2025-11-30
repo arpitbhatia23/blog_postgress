@@ -95,7 +95,8 @@ const login = asynchandler(async (req, res) => {
   if (user.length == 0) {
     throw new apiError(404, "user not found");
   }
-  const isPassvaild = isPasswordVaild(user[0].password, password);
+  const isPassvaild = await isPasswordVaild(user[0].password, password);
+  console.log(isPassvaild);
   if (!isPassvaild) {
     throw new apiError(400, "invalid password");
   }
@@ -106,14 +107,14 @@ const login = asynchandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-
+  const { password: _, ...userdata } = user[0];
   res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
       new apiResponse(200, {
-        user: user[0],
+        user: userdata,
         accessToken: accessToken,
         refreshToken: refreshToken,
       })
@@ -139,4 +140,26 @@ const logout = asynchandler(async (req, res) => {
     .json(new apiResponse(200, {}, "user logout sucessfully"));
 });
 
-export { registerUser, login, logout };
+const changePassword = asynchandler(async (req, res) => {
+  const { oldpassword, newpassword } = req.body;
+  const user = req.user;
+
+  const isVaild = await isPasswordVaild(user.password, oldpassword);
+
+  if (!isVaild) {
+    throw new apiError(400, "invaild old password");
+  }
+
+  const encryptpassword = await bcrypt.hash(newpassword, 10);
+
+  await db
+    .update(Users)
+    .set({ password: encryptpassword })
+    .where(eq(Users.id, user.id));
+
+  return res
+    .status(200)
+    .json(new apiResponse(200, "password updated sucessfully"));
+});
+
+export { registerUser, login, logout, changePassword };
