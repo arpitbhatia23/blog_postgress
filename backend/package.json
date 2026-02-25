@@ -10,7 +10,8 @@
     "dev": "node -env-file=.env --watch index.js",
     "start": "nodemon --watch . --ext js,json --delay 250ms --legacy-watch index.js",
     "migrate": "drizzle-kit migrate",
-    "generate": "drizzle-kit generate"
+    "generate": "drizzle-kit generate",
+    "test": "node --test"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

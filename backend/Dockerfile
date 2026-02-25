@@ -9,6 +9,7 @@ RUN npm install
 
 COPY . .
 
+RUN npm test
 
 EXPOSE 8000
 

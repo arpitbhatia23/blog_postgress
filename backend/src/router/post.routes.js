@@ -12,14 +12,16 @@ import {
 
 const router = Router();
 
-router.route("/create").post(verifyJwt, upload.single("image"), createPost);
+router
+  .route("/create-post")
+  .post(verifyJwt, upload.single("image"), createPost);
 router
   .route("/update/:post_id")
   .post(verifyJwt, upload.single("image"), updatePost);
 
-router.route("/getAllPost").get(verifyJwt, get_all_post);
+router.route("/get-all-post").get(verifyJwt, get_all_post);
 router.route("/getUserPost").get(verifyJwt, get_user_post);
-router.route("/getPostByID/:post_id").get(verifyJwt, get_post_by_id);
+router.route("/get-post-by-id/:post_id").get(verifyJwt, get_post_by_id);
 router.route("/deletePostById/:post_id").delete(verifyJwt, delete_post_by_id);
 
 export default router;

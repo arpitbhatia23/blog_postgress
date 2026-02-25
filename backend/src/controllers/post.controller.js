@@ -5,7 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudnairy.js";
 import { db } from "../db/index.js";
 import { Posts } from "../db/schema/post.schema.js";
 import { and, desc, eq, or } from "drizzle-orm";
-import { Users } from "../db/schema/user.schema.js";
+import { Comments } from "../db/schema/comment.schema.js";
 const createPost = asynchandler(async (req, res) => {
   const { title, content, published } = req.body;
   const user = req.user;
@@ -23,7 +23,6 @@ const createPost = asynchandler(async (req, res) => {
   if (imagePath) {
     image_url = await uploadOnCloudinary(imagePath);
   }
-  console.log(image_url);
   const post = await db
     .insert(Posts)
     .values({
@@ -116,12 +115,39 @@ const get_user_post = asynchandler(async (req, res) => {
 const get_post_by_id = asynchandler(async (req, res) => {
   const { post_id } = req.params;
 
-  const post = await db.select().from(Posts).where(eq(Posts.id, post_id));
-
-  if (post.length == 0) {
-    throw new apiError(404, "post not found");
+  // Fetch post with comments
+  const rows = await db
+    .select({
+      post_id: Posts.id,
+      post_title: Posts.title,
+      post_content: Posts.content,
+      comment_id: Comments.id,
+      comment_text: Comments.content,
+      comment_user: Comments.author_id,
+    })
+    .from(Posts)
+    .leftJoin(Comments, eq(Comments.post_id, Posts.id))
+    .where(eq(Posts.id, post_id));
+  // Post not found
+  if (!rows || rows.length === 0) {
+    throw new apiError(404, "Post not found");
   }
-  res.status(200).json(new apiResponse(200, post, "post fetch sucessfully"));
+
+  // Structure post with comments array
+  const post = {
+    id: rows[0].post_id,
+    title: rows[0].post_title,
+    content: rows[0].post_content,
+    comments: rows
+      .filter((row) => row.comment_id !== null)
+      .map((row) => ({
+        id: row.comment_id,
+        text: row.comment_text,
+        user_id: row.comment_user,
+      })),
+  };
+
+  res.status(200).json(new apiResponse(200, post, "Post fetched successfully"));
 });
 
 const delete_post_by_id = asynchandler(async (req, res) => {

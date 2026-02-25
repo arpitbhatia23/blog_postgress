@@ -6,6 +6,7 @@ class apiError extends Error {
     stack = ""
   ) {
     super(message);
+    this.name = "apiError";
     this.statuscode = statuscode;
     this.data = null;
     this.message;
