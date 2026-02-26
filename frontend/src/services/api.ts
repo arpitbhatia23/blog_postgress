@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const envBase = import.meta.env?.VITE_API_BASE_URL as string | undefined;
-const baseURL = envBase ?? "http://localhost/api";
+const baseURL = envBase ?? "https://localhost/api";
 console.log("this is my url ", baseURL);
 const api = axios.create({
   baseURL,

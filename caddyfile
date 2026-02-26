@@ -1,20 +1,11 @@
-:80 {
-
+localhost {
+    tls internal
     handle /api/* {
         reverse_proxy server:8000
     }
-
-    handle {
-        reverse_proxy client:3000
+    handle /health {
+        respond "ok" 200
     }
-}
-
-:443 {
-
-    handle /api/* {
-        reverse_proxy server:8000
-    }
-
     handle {
         reverse_proxy client:3000
     }
