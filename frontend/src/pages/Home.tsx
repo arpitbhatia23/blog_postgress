@@ -45,7 +45,7 @@ const Home = () => {
     <div className="space-y-12">
       <header className="max-w-2xl">
         <h1 className="text-5xl font-bold tracking-tight mb-4 text-gradient">
-          Explore the latest stories in tech.
+          Explore the latest stories in tech. hi am aurpit
         </h1>
         <p className="text-xl text-muted-foreground leading-relaxed">
           The best insights from developers, designers, and creators worldwide.
