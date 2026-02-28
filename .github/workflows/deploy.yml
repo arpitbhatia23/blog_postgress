@@ -22,4 +22,4 @@ jobs:
           script: |
             cd /var/www/blog_postgress
             git pull
-            docker compose up --build
+            sudo docker compose up --build
