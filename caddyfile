@@ -1,4 +1,4 @@
-localhost {
+blogs.nextcv.in {
     tls internal
     handle /api/* {
         reverse_proxy server:8000
