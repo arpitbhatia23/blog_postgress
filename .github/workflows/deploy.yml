@@ -20,6 +20,6 @@ jobs:
           username: ubuntu
           key: ${{secrets.SSH_KEY}}
           script: |
-            cd /var/www/blog_fullstack
+            cd /var/www/blog_postgress
             git pull
             docker compose up --build
